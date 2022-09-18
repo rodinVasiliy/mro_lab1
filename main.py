@@ -19,30 +19,43 @@ def calculate_transformation_matrix(B):
 
 
 def get_normal_random_vector(n, mu=0, sigma=1):
-    return np.matrix(np.random.normal(mu, sigma, n)).T
-
-
-def get_training_sample(M, B):
-    n, m = B.shape
-    A = calculate_transformation_matrix(B)
-    E = get_normal_random_vector(n)
-    return A * E + M
-
-
-def get_training_samples(M, B, N):
-    samples = None
-    for i in range(N):
-        new_sample = get_training_sample(M, B)
-        if samples is None:
-            samples = new_sample
-        else:
-            samples = np.concatenate((samples, new_sample), axis=1)
-    return samples.T
+    tmp_array = np.zeros((2, 200))
+    for i in range(0, n):
+        tmp_array += np.random.uniform(0.5, -0.5, (2, 200))
+    tmp_array /= np.sqrt(50)
+    tmp_array /= np.sqrt(1 / 12)
+    return tmp_array
 
 
 def show_vector_points(X, color='red'):
     for x in X:
-        plt.scatter(x[0, 0], x[0, 1], color=color)
+        plt.scatter(x[0], x[1], color=color)
+
+
+def show_vector_points1(X, color='red'):
+    plt.scatter(X[0, :], X[1, :], color=color)
+
+
+# return np.matrix(np.random.normal(mu, sigma, n)).T
+
+
+def get_training_sample(M, B, E):
+    A = np.array(calculate_transformation_matrix(B))
+    tmp = (np.dot(A, E)).reshape(2,1)
+    return tmp + M
+
+
+def get_training_samples(M, B, N):
+    samples = None
+    E = get_normal_random_vector(N)
+    for i in range(N):
+        random_vector = E[:, i].T
+        new_sample = get_training_sample(M, B, random_vector)
+        if samples is None:
+            samples = new_sample
+        else:
+            samples = np.concatenate((samples, new_sample), axis=1)
+    return samples
 
 
 def get_estimate_expectation(samples):
@@ -82,14 +95,17 @@ if __name__ == '__main__':
     # first task
     samples1 = get_training_samples(M1, R1, 200)
     samples2 = get_training_samples(M2, R1, 200)
-    show_vector_points(samples1)
-    show_vector_points(samples2, color='blue')
+    show_vector_points1(samples1)
+    show_vector_points1(samples2, color='blue')
     plt.show()
 
     # second task
     samples4 = get_training_samples(M2, R2, 200)
     samples5 = get_training_samples(M3, R3, 200)
-    show_vector_points(samples1)
-    show_vector_points(samples4, color='blue')
-    show_vector_points(samples5, color='green')
+    show_vector_points1(samples1)
+    show_vector_points1(samples4, color='blue')
+    show_vector_points1(samples5, color='green')
     plt.show()
+    # E = get_normal_random_vector(50)
+    # show_vector_points1(E)
+    # plt.show()
