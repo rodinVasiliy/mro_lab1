@@ -8,16 +8,16 @@ import numpy as np
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 
-def calculate_transformation_matrix(B):
+def calculate_transformation_matrix(correlation_matrix):
     A = np.zeros((2, 2))
-    A[0, 0] = np.sqrt(B[0, 0])
+    A[0, 0] = np.sqrt(correlation_matrix[0, 0])
     A[0, 1] = 0
-    A[1, 0] = B[0, 1] / np.sqrt(B[0, 0])
-    A[1, 1] = np.sqrt(B[1, 1] - B[0, 1] * B[0, 1] / B[0, 0])
+    A[1, 0] = correlation_matrix[0, 1] / np.sqrt(correlation_matrix[0, 0])
+    A[1, 1] = np.sqrt(correlation_matrix[1, 1] - correlation_matrix[0, 1] ** 2 / correlation_matrix[0, 0])
     return A
 
 
-def get_normal_random_vector(n, mu=0, sigma=1):
+def get_normal_random_vector(n):
     tmp_array = np.zeros((2, n))
     for i in range(0, n):
         tmp_array += np.random.uniform(0.5, -0.5, (2, n))
@@ -35,21 +35,18 @@ def show_vector_points1(X, color='red'):
     plt.scatter(X[0, :], X[1, :], color=color)
 
 
-# return np.matrix(np.random.normal(mu, sigma, n)).T
-
-
-def get_training_sample(M, B, E):
-    A = np.array(calculate_transformation_matrix(B))
+def get_training_sample(M, R, E):
+    A = np.array(calculate_transformation_matrix(R))
     tmp = (np.dot(A, E)).reshape(2, 1)
     return tmp + M
 
 
-def get_training_samples(M, B, N):
+def get_training_samples(M, R, N):
     samples = None
     E = get_normal_random_vector(N)
     for i in range(N):
         random_vector = E[:, i]
-        new_sample = get_training_sample(M, B, random_vector)
+        new_sample = get_training_sample(M, R, random_vector)
         if samples is None:
             samples = new_sample
         else:
@@ -68,21 +65,21 @@ def get_estimate_corr_matrix(samples):
     tmp = 0
     for i in range(0, len(samples[0]) - 1):
         A = samples[:, i].reshape(2, 1)
-        B = samples[:, i].reshape(1, 2)
-        tmp += np.dot(A, B)
+        R = samples[:, i].reshape(1, 2)
+        tmp += np.dot(A, R)
     tmp /= len(samples[0])
     M_T = M_estimate.reshape(1, 2)
     tmp -= np.dot(M_estimate, M_T)
     return tmp
 
 
-def get_B_distance(M0, B0, M1, B1):
-    B_half_sum = (B1 + B0) / 2
+def get_B_distance(M0, R0, M1, R1):
+    B_half_sum = (R1 + R0) / 2
     M1_minus_M0 = M1 - M0
     M1_minus_M0_T = M1_minus_M0.reshape(1, 2)
     det_B_half = np.linalg.det(B_half_sum)
-    det_B0 = np.linalg.det(B0)
-    det_B1 = np.linalg.det(B1)
+    det_B0 = np.linalg.det(R0)
+    det_B1 = np.linalg.det(R1)
     inverse_B_half = np.linalg.inv(B_half_sum)
     f = 0.25 * M1_minus_M0_T
     s = np.dot(f, inverse_B_half)
@@ -91,10 +88,10 @@ def get_B_distance(M0, B0, M1, B1):
     return result.item()
 
 
-def get_M_distance(M0, M1, B):
+def get_M_distance(M0, M1, R):
     M_diff = M1 - M0
     M_diff_T = M_diff.reshape(1, 2)
-    f = np.dot(M_diff_T, np.linalg.inv(B))
+    f = np.dot(M_diff_T, np.linalg.inv(R))
     result = np.dot(f, M_diff)
     return result.item()
 
@@ -104,9 +101,9 @@ if __name__ == '__main__':
     M1 = np.array([-1, 0]).reshape(2, 1)
     M2 = np.array([1, -1]).reshape(2, 1)
     M3 = np.array([-1, 2]).reshape(2, 1)
-    R1 = np.array(([0.014, 0], [0, 0.020]))
-    R2 = np.array(([0.031, 0], [0, 0.016]))
-    R3 = np.array(([0.007, 0], [0, 0.020]))
+    R1 = np.array(([0.4, 0.3], [0.3, 0.5]))
+    R2 = np.array(([0.3, 0], [0, 0.3]))
+    R3 = np.array(([0.87, -0.87], [-0.8, 0.95]))
     # first task
     samples1 = get_training_samples(M1, R1, 200)
     samples2 = get_training_samples(M2, R1, 200)
