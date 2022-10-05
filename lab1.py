@@ -8,6 +8,11 @@ import numpy as np
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 
+def save_generated_features(filename, data):
+    with open(filename, 'wb') as f:
+        np.save(f, data)
+
+
 def calculate_transformation_matrix(correlation_matrix):
     A = np.zeros((2, 2))
     A[0, 0] = np.sqrt(correlation_matrix[0, 0])
@@ -98,12 +103,12 @@ def get_M_distance(M0, M1, R):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    M1 = np.array([-1, 0]).reshape(2, 1)
-    M2 = np.array([1, -1]).reshape(2, 1)
-    M3 = np.array([-1, 2]).reshape(2, 1)
-    R1 = np.array(([0.4, 0.3], [0.3, 0.5]))
-    R2 = np.array(([0.3, 0], [0, 0.3]))
-    R3 = np.array(([0.87, -0.87], [-0.8, 0.95]))
+    M1 = np.array([-1, 1]).reshape(2, 1)
+    M2 = np.array([0, 1]).reshape(2, 1)
+    M3 = np.array([-1, -1]).reshape(2, 1)
+    R1 = np.array(([0.08, 0.05], [0.05, 0.05]))
+    R2 = np.array(([0.1, 0], [0, 0.1]))
+    R3 = np.array(([0.87, -0.87], [-0.87, 0.95]))
     # first task
     samples1 = get_training_samples(M1, R1, 200)
     samples2 = get_training_samples(M2, R1, 200)
@@ -160,3 +165,6 @@ if __name__ == '__main__':
     print(
         "Bhatacharyas distance for S3(M2, R2) and S4(M3, R3): \n",
         B_distance_S3_S4, "\n")
+
+    save_generated_features('two_classes.npy', [samples1, samples2])
+    save_generated_features('three_classes.npy', [samples1, samples3, samples4])
