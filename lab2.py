@@ -10,21 +10,42 @@ def show_vector_points(X, color='red'):
     plt.scatter(X[0, :], X[1, :], color=color)
 
 
-def get_bayesian_border_for_normal_classes(X, M_l, M_j, B, thresh):
-    def dividing_border(x, coeff_1, coeff_2):
-        return np.float_(np.dot(coeff_1, x) + coeff_2 + thresh)
-
-    Y = []
-    M_diff = (M_l - M_j)
+def get_bayesian_border_for_normal_classes_with_same_cor_matrix(X, M_l, M_j, B, P_l, P_j):
+    M_diff = M_l - M_j
     M_diff_T = M_diff.reshape(1, 2)
-    M_sum = M_l + M_j
+    M_sum = (M_l + M_j)
+    M_sum_T = M_sum.reshape(1, 2)
     B_inv = np.linalg.inv(B)
-    coeff_1 = np.dot(M_diff_T, B_inv)
-    coeff_2 = -0.5 * np.dot(np.dot(M_diff_T, B_inv), M_sum)
+    b_matrix = np.dot(M_diff_T, B_inv)
+    c = 0.5 * np.dot(np.dot(M_sum_T, B_inv), M_diff) - np.log(P_l / P_j)
+    Y = []
+    for x in X:
+        y = (c - b_matrix[0, 0] * x) / b_matrix[0, 1]
+        Y.append(np.float_(y))
+    return np.array(Y)
+
+
+def get_bayesian_border_for_normal_classes(X, M_l, M_j, B_l, B_j, P_l, P_j):
+    Y = []
+
+    B_j_inv = np.linalg.inv(B_j)
+    B_l_inv = np.linalg.inv(B_l)
+    b_matrix_1 = B_j_inv - B_l_inv
+    M_l_T = M_l.reshape(1, 2)
+    M_j_T = M_j.reshape(1, 2)
+    b_matrix_2 = 2 * (np.dot(M_l_T, B_l_inv) - np.dot(M_j_T, B_j_inv))
+    c = np.log(np.linalg.det(B_l) / np.linalg.det(B_j)) + 2 * np.log(P_l / P_j) - np.dot(np.dot(M_l_T, B_l_inv),
+                                                                                         M_l) + np.dot(
+        np.dot(M_j_T, B_j_inv), M_j)
+    A = b_matrix_1[1, 1]
 
     for x in X:
-        x_coord = np.array(x, 0).reshape(2, 1)
-        Y.append(dividing_border(x_coord, coeff_1, coeff_2))
+        B = (b_matrix_1[0, 1] + b_matrix_1[1, 0]) * x + b_matrix_2[0, 1]
+        C = b_matrix_1[0, 0] * (x ** 2) + b_matrix_2[0, 0] * x + c
+        D = (B ** 2) - 4 * A * C
+        y1 = ((-1) * B + np.sqrt(D)) / (2 * A)
+        y2 = ((-1) * B - np.sqrt(D)) / (2 * A)
+        Y.append(np.float_(y1))
 
     return np.array(Y)
 
@@ -40,8 +61,8 @@ if __name__ == '__main__':
     P2 = 0.5
     P3 = 0.5
     feature1, feature2 = load_features('C:\\mro_lab1\\two_classes.npy')
-    x_border = np.linspace(-1, 1, 100)
-    y_border = get_bayesian_border_for_normal_classes(x_border, M1, M2, R1, np.log(P2 / P1))
+    x_border = np.linspace(-2, 1, 100)
+    y_border = get_bayesian_border_for_normal_classes_with_same_cor_matrix(x_border, M1, M2, R1, P1, P2)
     plt.plot(x_border, y_border, color='green')
     show_vector_points(feature1, 'red')
     show_vector_points(feature2, 'blue')
