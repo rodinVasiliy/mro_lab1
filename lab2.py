@@ -68,6 +68,23 @@ def get_lambda(M_l, M_j, R, p0_s):
     return np.exp(-0.5 * M_distance + np.sqrt(M_distance) * erfinv(1 - p0_s))
 
 
+# -1.7859820175519026
+def classification_errordiff(X1, M1, M2, B1, B2, P1, P2):
+    count = 0
+    for i in range(0, len(X1[0])):
+        x = X1[:, i].reshape(2, 1)
+        d1 = np.float_(
+            np.log(P1) - np.log(np.sqrt(np.linalg.det(B1))) - 0.5 * np.dot(
+                np.dot(np.transpose(x - M1), np.linalg.inv(B1)), (x - M1)))
+        d2 = np.float_(
+            np.log(P2) - np.log(np.sqrt(np.linalg.det(B2))) - 0.5 * np.dot(
+                np.dot(np.transpose(x - M2), np.linalg.inv(B2)), (x - M2)))
+        if d2 > d1:
+            count += 1
+
+    return count / len(X1[0])
+
+
 if __name__ == '__main__':
     M1 = np.array([-1, 1]).reshape(2, 1)
     M2 = np.array([0, 1]).reshape(2, 1)
@@ -128,5 +145,9 @@ if __name__ == '__main__':
     show_vector_points(feature1, 'red')
     show_vector_points(feature3, 'blue')
     show_vector_points(feature4, 'green')
-    plt.title('bayes for dif correlation matrix')
+    plt.title('Байес для различных корреляционных матриц')
     plt.show()
+    error1 = classification_errordiff(feature1, M1, M2, R1, R2, P1, P2)
+    print(f"ошибка классификации для первой выборки (1-3) {error1}")
+    error3 = classification_errordiff(feature3, M2, M1, R2, R1, P2, P1)
+    print(f"ошибка классификации для третьей выборки (3-1) {error3}")
