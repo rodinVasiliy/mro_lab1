@@ -98,7 +98,8 @@ if __name__ == '__main__':
 
     feature1, feature2 = load_features('C:\\mro_lab1\\two_classes.npy')
     x_array = np.linspace(-2, 1, 100)
-    y_array = get_bayesian_border_for_normal_classes_with_same_cor_matrix(x_array, M1, M2, R1, thresh=np.log(P2 / P1))
+    thresh = np.log(P2 / P1)
+    y_array = get_bayesian_border_for_normal_classes_with_same_cor_matrix(x_array, M1, M2, R1, thresh=thresh)
     plt.plot(x_array, y_array, color='green')
     show_vector_points(feature1, 'red')
     show_vector_points(feature2, 'blue')
@@ -114,7 +115,8 @@ if __name__ == '__main__':
     P1_optim = 0.5
     P2_optim = 0.5
     x_array = np.linspace(-2, 1, 100)
-    y_array = get_bayesian_border_for_normal_classes_with_same_cor_matrix(x_array, M1, M2, R1, thresh=np.log(P2 / P1))
+    y_array = get_bayesian_border_for_normal_classes_with_same_cor_matrix(x_array, M1, M2, R1,
+                                                                          thresh=np.log(P2_optim / P1_optim))
     plt.plot(x_array, y_array, color='green')
     show_vector_points(feature1, 'red')
     show_vector_points(feature2, 'blue')
@@ -124,7 +126,8 @@ if __name__ == '__main__':
     # N-P
     p0_s = 0.05
     thresh_lambda = get_lambda(M1, M2, R1, p0_s)
-    y_array = get_bayesian_border_for_normal_classes_with_same_cor_matrix(x_array, M1, M2, R1, thresh=thresh_lambda)
+    y_array = get_bayesian_border_for_normal_classes_with_same_cor_matrix(x_array, M1, M2, R1,
+                                                                          thresh=np.log(thresh_lambda))
     plt.plot(x_array, y_array, color='green')
     show_vector_points(feature1, 'red')
     show_vector_points(feature2, 'blue')
