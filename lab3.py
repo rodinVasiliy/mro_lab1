@@ -40,10 +40,10 @@ def generate_binary_vector(pattern_vector, N, p):
         binary_vectors_array.append(binary_vector)
     return binary_vectors_array
 
-
-def print_vectors(vectors_array):
-    for vector in vectors_array:
-        print(vector)
+#
+# def print_vectors(vectors_array):
+#     for vector in vectors_array:
+#         print(vector)
 
 
 def print_vector(vector):
@@ -120,7 +120,7 @@ def get_experiment_errors(exp_classes, classes, P_0, P_1, class_name, names):
     for vector in exp_classes:
         if bayesian_binary_classifier(vector, classes[0], classes[1], P_0, P_1, names[0], names[1]) != class_name:
             exp_p += 1
-    print(f"amount of inalid vectors {class_name}: {exp_p}")
+    print(f"amount of invalid vectors {class_name}: {exp_p}")
     exp_p /= len(exp_classes)
     # TODO подумать
     e = -1
@@ -129,15 +129,24 @@ def get_experiment_errors(exp_classes, classes, P_0, P_1, class_name, names):
     return exp_p, e
 
 
-def calc_w01(class0, class1):
-    size = np.shape(class1)
-    w01 = np.zeros((size[1], size[2]))
-    p0 = get_p_equal_1(class0)
-    p1 = get_p_equal_1(class1)
-    for i in range(0, size[1]):
-        for j in range(0, size[2]):
-            w01[i][j] = np.log(p0[i][j] / (1 - p0[i][j]) * (1 - p1[i][j]) / p1[i][j])
-    return w01
+# def calc_w01(class0, class1):
+#     size = np.shape(class1)
+#     w01 = np.zeros((size[1], size[2]))
+#     p0 = get_p_equal_1(class0)
+#     p1 = get_p_equal_1(class1)
+#     for i in range(0, size[1]):
+#         for j in range(0, size[2]):
+#             w01[i][j] = np.log(p0[i][j] / (1 - p0[i][j]) * (1 - p1[i][j]) / p1[i][j])
+#     return w01
+
+
+def find_invalid_vectors(exp_class, classes, P_0, P_1, className, names):
+    invalid_vectors = []
+    for vector in exp_class:
+        if bayesian_binary_classifier(vector, classes[0], classes[1], P_0, P_1, names[0],
+                                      names[1]) != className:
+            invalid_vectors.append(vector)
+    return invalid_vectors
 
 
 if __name__ == '__main__':
@@ -154,23 +163,28 @@ if __name__ == '__main__':
     exp_error, epsilon = get_experiment_errors(vectors_o, [vectors_p, vectors_o], 0.5, 0.5, "O", ["P", "O"])
     print(f"experimental error is {exp_error} epsilon is {epsilon}")
 
-    imshow(np.array(O), cmap = 'gray')
+    imshow(np.array(O), cmap='gray')
     show()
 
     imshow(vectors_o[0])
     show()
 
-    imshow(np.array(P), cmap = 'gray')
+    imshow(np.array(P), cmap='gray')
     show()
 
     imshow(vectors_p[0])
     show()
 
-    w_01 = calc_w01(vectors_o, vectors_p)
+    invalid_vectors_from_o = find_invalid_vectors(vectors_o, [vectors_p, vectors_o], 0.5, 0.5, "O", ["P", "O"])
+    if len(invalid_vectors_from_o) != 0:
+        print('we find an error in vectors o')
+        invalid_vectors_o = invalid_vectors_from_o[0]
+        imshow(np.array(invalid_vectors_o))
+        show()
 
-    imshow(w_01)
-    show()
-
-    w_01_minus = w_01 * (-1)
-    imshow(w_01_minus)
-    show()
+    invalid_vectors_from_p = find_invalid_vectors(vectors_p, [vectors_p, vectors_o], 0.5, 0.5, "P", ["P", "O"])
+    if len(invalid_vectors_from_p) != 0:
+        print('we find an error in vectors p')
+        invalid_vectors_p = invalid_vectors_from_p[0]
+        imshow(np.array(invalid_vectors_p))
+        show()
