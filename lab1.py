@@ -6,6 +6,7 @@ import numpy as np
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import Constants
 
 
 def save_generated_features(filename, data):
@@ -103,12 +104,12 @@ def get_M_distance(M0, M1, R):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    M1 = np.array([-1, 1]).reshape(2, 1)
-    M2 = np.array([0, 1]).reshape(2, 1)
-    M3 = np.array([-1, -1]).reshape(2, 1)
-    R1 = np.array(([0.08, 0.05], [0.05, 0.05]))
-    R2 = np.array(([0.1, 0], [0, 0.1]))
-    R3 = np.array(([0.87, -0.87], [-0.87, 0.95]))
+    M1 = Constants.M1
+    M2 = Constants.M2
+    M3 = Constants.M3
+    R1 = Constants.R1
+    R2 = Constants.R2
+    R3 = Constants.R3
     # first task
     samples1 = get_training_samples(M1, R1, 200)
     samples2 = get_training_samples(M2, R1, 200)

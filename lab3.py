@@ -40,6 +40,7 @@ def generate_binary_vector(pattern_vector, N, p):
         binary_vectors_array.append(binary_vector)
     return binary_vectors_array
 
+
 #
 # def print_vectors(vectors_array):
 #     for vector in vectors_array:
@@ -122,7 +123,6 @@ def get_experiment_errors(exp_classes, classes, P_0, P_1, class_name, names):
             exp_p += 1
     print(f"amount of invalid vectors {class_name}: {exp_p}")
     exp_p /= len(exp_classes)
-    # TODO подумать
     e = -1
     if exp_p != 0:
         e = np.sqrt((1 - exp_p) / (exp_p * len(exp_classes)))

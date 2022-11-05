@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
+
+import Constants
 import lab1
 from scipy.stats import norm
 from scipy.special import erfinv
@@ -86,18 +88,18 @@ def classification_errordiff(X1, M1, M2, B1, B2, P1, P2):
 
 
 if __name__ == '__main__':
-    M1 = np.array([-1, 1]).reshape(2, 1)
-    M2 = np.array([0, 1]).reshape(2, 1)
-    M3 = np.array([-1, -1]).reshape(2, 1)
-    R1 = np.array(([0.08, 0.05], [0.05, 0.05]))
-    R2 = np.array(([0.1, 0], [0, 0.1]))
-    R3 = np.array(([0.87, -0.87], [-0.87, 0.95]))
-    P1 = 0.5
-    P2 = 0.5
-    P3 = 0.5
+    M1 = Constants.M1
+    M2 = Constants.M2
+    M3 = Constants.M3
+    R1 = Constants.R1
+    R2 = Constants.R2
+    R3 = Constants.R3
+    P1 = Constants.P1
+    P2 = Constants.P2
+    P3 = Constants.P3
 
     feature1, feature2 = load_features('C:\\mro_lab1\\two_classes.npy')
-    x_array = np.linspace(-2, 1, 100)
+    x_array = np.linspace(-2, 5, 100)
     thresh = np.log(P2 / P1)
     y_array = get_bayesian_border_for_normal_classes_with_same_cor_matrix(x_array, M1, M2, R1, thresh=thresh)
     plt.plot(x_array, y_array, color='green')
@@ -114,7 +116,7 @@ if __name__ == '__main__':
     # minmax
     P1_optim = 0.5
     P2_optim = 0.5
-    x_array = np.linspace(-2, 1, 100)
+    x_array = np.linspace(-2, 5, 100)
     y_array = get_bayesian_border_for_normal_classes_with_same_cor_matrix(x_array, M1, M2, R1,
                                                                           thresh=np.log(P2_optim / P1_optim))
     plt.plot(x_array, y_array, color='green')
@@ -128,19 +130,19 @@ if __name__ == '__main__':
     thresh_lambda = get_lambda(M1, M2, R1, p0_s)
     y_array = get_bayesian_border_for_normal_classes_with_same_cor_matrix(x_array, M1, M2, R1,
                                                                           thresh=np.log(thresh_lambda))
-    plt.plot(x_array, y_array, color='green')
+    plt.plot(x_array, y_array, 'g-')
     show_vector_points(feature1, 'red')
     show_vector_points(feature2, 'blue')
     plt.title('N-P')
     plt.show()
 
     feature1, feature3, feature4 = load_features('C:\\mro_lab1\\three_classes.npy')
-    x_array = np.linspace(-3, 2, 200)
+    x_array = np.linspace(-4, 4, 200)
     bound_1_3 = get_bayesian_border_for_normal_classes(x_array, M1, M2, R1, R2, np.log(P2 / P1))
     bound_1_4 = get_bayesian_border_for_normal_classes(x_array, M1, M3, R1, R3, np.log(P2 / P1))
     bound_3_4 = get_bayesian_border_for_normal_classes(x_array, M2, M3, R2, R3, np.log(P2 / P1))
-    plt.ylim(-4, 3)
-    plt.xlim(-3, 2)
+    plt.ylim(-4, 4)
+    plt.xlim(-4, 4)
     # передаем координаты x[:, 0] и координаты y[:, 1]
     plt.scatter(bound_1_3[:, 0], bound_1_3[:, 1], color='orange')
     plt.scatter(bound_1_4[:, 0], bound_1_4[:, 1], color='black')
