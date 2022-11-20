@@ -76,6 +76,8 @@ def get_border_lin_classificator(W, wn, x):
     else:
         x = -(wn / W[0]) * np.ones(len(x))
         y = np.linspace(-100, 100, len(x))
+    shape_x = x.shape
+    y = y.reshape(shape_x)
     return x, y
 
 
