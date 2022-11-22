@@ -7,8 +7,8 @@ def show(title: str, dataset0: np.array, dataset1: np.array, border_x_arr, borde
     plt.figure()
     plt.title(title)
 
-    plt.plot(dataset0[0], dataset0[1], color='red', marker='.')
-    plt.plot(dataset1[0], dataset1[1], color='green', marker='+')
+    plt.plot(dataset0[0], dataset0[1], marker='.')
+    plt.plot(dataset1[0], dataset1[1], marker='+')
 
     for i in range(len(border_x_arr)):
         plt.plot(border_x_arr[i], border_y_arr[i], color=colors[i], label=labels[i])

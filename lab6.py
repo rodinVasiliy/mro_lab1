@@ -10,6 +10,27 @@ from sklearn.svm import SVC, LinearSVC
 import utils.show
 
 
+def get_K(x, y, K, K_params):
+    c = K_params[0]
+    d = K_params[1]
+    if K == 'polynomial':
+        tmp = np.matmul(x, y) + c
+        return pow(tmp, d)
+    return None
+
+
+def get_P_kernel(dataset, K, K_params):
+    matrix_range = int(dataset.shape[1])
+    new_shape = (matrix_range, matrix_range)
+    new_P_matrix = np.zeros(new_shape)
+    for i in range(0, matrix_range):
+        for j in range(0, matrix_range):
+            tmp = dataset[2, i] * dataset[2, j]
+            x = dataset[0:2, i].reshape(1, 2)
+            y = dataset[0:2, j]
+            new_P_matrix[i, j] = tmp * get_K(x, y, K, K_params)
+    return new_P_matrix
+
 def show_separating_hyperplane(title, w, wn, samples0, samples1, sup_0, sup_1):
     x_range = np.arange(-4, 4, 0.1)
     x, y = lab4.get_border_lin_classificator(w, wn, x_range)
@@ -110,6 +131,15 @@ def get_w(support_vectors, lambda_array):
     return result
 
 
+def get_wn_with_kernel(support_vectors, lambda_array, K, K_params):
+    result = np.zeros(shape=(support_vectors.shape[0] - 1, 1))
+    for i in range(0, len(lambda_array)):
+        tmp = lambda_array[i] * support_vectors[2, i]
+        result[0] += support_vectors[0, i] * tmp
+        result[1] += support_vectors[1, i] * tmp
+    return result
+
+
 def get_wn(support_vectors, w):
     wn = 0
     w = np.transpose(w)
@@ -188,7 +218,7 @@ if __name__ == '__main__':
     # sup_0, sup_1 = separate_sup_vectors(sup_vectors)
     # errors = get_errors(dataset, w_svc, wn_svc)
     # print(f'p0 + p1 errors for SVC = {errors}')
-    # show_separating_hyperplane('qp', w_svc, wn_svc, samples0, samples1, sup_0, sup_1)
+    # show_separating_hyperplane('SVC', w_svc, wn_svc, samples0, samples1, sup_0, sup_1)
     #
     # clf_lin = svm.LinearSVC()
     # clf_lin.fit(x, y)
@@ -228,9 +258,9 @@ if __name__ == '__main__':
         w_qp = get_w(sup_vectors, sup_lambdas)
         wn_qp = get_wn(sup_vectors, w_qp)
         errors = get_errors(dataset, w_qp, wn_qp)
-        print(f'p0 + p1 errors for qpsolver = {errors}')
+        print(f'C = {C} p0 + p1 errors for qpsolver = {errors}')
 
-        show_separating_hyperplane('qp', w_qp, wn_qp, samples0, samples1, sup_0, sup_1)
+        show_separating_hyperplane(f'C = {C} qp', w_qp, wn_qp, samples0, samples1, sup_0, sup_1)
 
         clf_svc = svm.SVC(kernel="linear", C=C)
 
@@ -246,3 +276,21 @@ if __name__ == '__main__':
         show_separating_hyperplane(f'C = {C} SVC method', w_svc, wn_svc, samples0, samples1, sup_0, sup_1)
 
     print(f'best C = {find_best_C_from_values(dataset, np.arange(1, 20, 1))}')
+
+    # task 4
+    # samples0 = lab1.get_training_samples(Constants.M1_lab6, Constants.R1_lab6, 100)
+    # samples1 = lab1.get_training_samples(Constants.M2_lab6_, Constants.R2_lab6, 100)
+    # dataset = get_dataset(samples0, samples1)
+    # dataset_len = dataset.shape[1]
+    #
+    # P = get_P_kernel(dataset, 'polynomial', [0, 1])
+    # a_matrix = get_a_matrix(dataset)
+    # q = get_q(dataset)
+    # b = np.zeros(1)
+    # G = np.concatenate((np.eye(dataset_len) * -1, np.eye(dataset_len)), axis=0)
+    # for C in [0.1, 1, 10, 20]:
+    #     h = np.concatenate((np.zeros((dataset_len,)), np.full((dataset_len,), C)), axis=0)
+    #     lambda_array = solve_qp(P, q, G, h, a_matrix, b, solver='cvxopt')
+    #     sup_vectors, sup_lambdas = get_support_vectors(dataset, lambda_array)
+    #     sup_vectors = np.transpose(sup_vectors)
+    #     sup_0, sup_1 = separate_sup_vectors(sup_vectors)
