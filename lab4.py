@@ -109,6 +109,25 @@ def print_classificator_for_diff_corr_matrix(fig, pos, class0, class1, dfirst, d
     return fig
 
 
+def get_disc_func(M, B, P, X):
+    det_B = np.linalg.det(B)
+    tmp_M = M.reshape(2, )
+    x_M_transpose = np.transpose(X - tmp_M)
+    x_M = X - tmp_M
+    inv_B = np.linalg.inv(B)
+
+    return np.log(P) - np.log(np.sqrt(det_B)) - 0.5 * np.matmul(x_M_transpose, np.matmul(inv_B, x_M))
+
+
+def get_classification_error_for_bayes(X1, M1, M2, B1, B2, P1, P2):
+    cnt_errors = 0
+    tmpX = np.transpose(X1)
+    for i in range(0, len(tmpX)):
+        if get_disc_func(M1, B1, P1, tmpX[i, :]) < get_disc_func(M2, B2, P2, tmpX[i, :]):
+            cnt_errors += 1
+    return cnt_errors / len(tmpX)
+
+
 if __name__ == '__main__':
     # lab 4
     feature1, feature2 = lab2.load_features('C:\\mro_lab1\\two_classes.npy')
@@ -145,10 +164,10 @@ if __name__ == '__main__':
     fig = plt.figure(figsize=(16, 7))
     fig = print_classificator(fig, 121, feature1, feature2, (x_array, bayes_border_1),
                               dFisher_border_1, "Fisher",
-                             "Bayes", "--", ["y", "y"])
+                              "Bayes", "--", ["y", "y"])
     fig = print_classificator_for_diff_corr_matrix(fig, 122, feature1, feature4, bayes_border_2,
                                                    dFisher_border_2, "Fisher",
-                                              "Bayes", "--", ["y", "y"])
+                                                   "Bayes", "--", ["y", "y"])
     show()
     # task 4.2
     # Классификатор, минимизирующий СКО
@@ -160,9 +179,9 @@ if __name__ == '__main__':
 
     fig1 = plt.figure(figsize=(16, 7))
     fig1 = print_classificator(fig1, 121, feature1, feature2, (x_array, bayes_border_1), dMSE1,
-                              "MSE", "Bayes", "--", ["y", "y"])
+                               "MSE", "Bayes", "--", ["y", "y"])
     fig1 = print_classificator_for_diff_corr_matrix(fig1, 122, feature1, feature4, bayes_border_2, dMSE2, "MSE",
-                                               "Bayes", "--", ["y", "y"])
+                                                    "Bayes", "--", ["y", "y"])
     show()
 
     # task 4.3
@@ -199,12 +218,12 @@ if __name__ == '__main__':
     c = ["r", "orange", "y", "g", "darkgreen", "c", "b", "m"]
     fig7 = plt.figure(figsize=(16, 7))
     fig7 = print_classificator(fig7, 121, feature1, feature2, (x_array, bayes_border_1),
-                              arrBorders1[0:40:4],
-                              "Bayes", "Robbins: sample B", "--", c)
+                               arrBorders1[0:40:4],
+                               "Bayes", "Robbins: sample B", "--", c)
     resd1 = [arrBorders1[0], arrBorders1[-1]]
     fig7 = print_classificator(fig7, 122, feature1, feature2, (x_array, bayes_border_1), resd1,
-                              "Bayes",
-                              "Robbins: sample B", "--", c)
+                               "Bayes",
+                               "Robbins: sample B", "--", c)
     show()
     Wrobbins2 = calc_acrp_parameters(xy)
     arrBorders2 = [x_array]
@@ -214,10 +233,10 @@ if __name__ == '__main__':
 
     fig8 = plt.figure(figsize=(16, 7))
     fig8 = print_classificator_for_diff_corr_matrix(fig8, 121, feature1, feature4, bayes_border_2, arrBorders2[0:40:4],
-                                               "Bayes", "Robbins: dif B", "--", c)
+                                                    "Bayes", "Robbins: dif B", "--", c)
     resd2 = [arrBorders2[0], arrBorders2[-1]]
     fig8 = print_classificator_for_diff_corr_matrix(fig8, 122, feature1, feature4, bayes_border_2, resd2,
-                                               "Bayes", "Robbins: dif B", "--", c)
+                                                    "Bayes", "Robbins: dif B", "--", c)
     show()
 
     # выбор начального W не влияет на сходимость
