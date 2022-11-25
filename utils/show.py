@@ -23,10 +23,10 @@ def show(title: str, dataset0: np.array, dataset1: np.array, border_x_arr, borde
 
 def show_borders(x_borders, y_borders, colors_array, labels_array,
                  markers_array):
-
     for i in range(0, len(x_borders)):
         plt.plot(x_borders[i], y_borders[i], color=colors_array[i], label=labels_array[i], marker=markers_array[i])
     plt.legend()
+
 
 def show_separating_hyperplanes(title, samples0, samples1, W_array, colors_array, labels_array,
                                 markers_array):
@@ -57,9 +57,9 @@ def show_separating_hyperplanes(title, samples0, samples1, W_array, colors_array
 
 def show_sup_vectors(sup_vectors0, sup_vectors1):
     if sup_vectors0 is not None and sup_vectors0.size > 0:
-        plt.scatter(sup_vectors0[0, :], sup_vectors0[1, :], marker='o', color='c', alpha=0.6)
+        plt.scatter(sup_vectors0[0, :], sup_vectors0[1, :], marker='o', color='c', alpha=0.6, s=100)
     if sup_vectors1 is not None and sup_vectors1.size > 0:
-        plt.scatter(sup_vectors1[0, :], sup_vectors1[1, :], marker='o', color='fuchsia', alpha=0.6)
+        plt.scatter(sup_vectors1[0, :], sup_vectors1[1, :], marker='o', color='fuchsia', alpha=0.6, s=100)
 
 
 def show_bayes_border(border, colol, label, marker):

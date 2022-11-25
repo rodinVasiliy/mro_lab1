@@ -197,12 +197,12 @@ def get_wn_with_kernel(support_vectors, lambda_array, K, K_params):
 def get_wn(support_vectors, w):
     wn = 0
     w = np.transpose(w)
-    for i in range(0, len(support_vectors)):
+    for i in range(0, len(support_vectors[0])):
         r = support_vectors[2, i]
         xi = support_vectors[0:2, i].reshape(2, 1)
         tmp = r - np.matmul(w, xi)
         wn += tmp
-    return wn / len(support_vectors)
+    return wn / len(support_vectors[0])
 
 
 def get_errors(dataset, w, wn):
@@ -257,7 +257,6 @@ def task2(samples0, samples1):
     qp_colors = ['black', 'red', 'green']
     svc_colors = ['orange', 'purple', 'yellow']
     linear_colors = ['blue', 'gold', 'tan']
-    colors_array = [qp_colors, svc_colors, linear_colors]
 
     qp_labels = ['qp0', 'qp1', 'qp2']
     svc_labels = ['svc0', 'svc1', 'svc2']
@@ -306,6 +305,7 @@ def task2(samples0, samples1):
 
     W_array = np.array([[w_qp, wn_qp], [w_svc, wn_svc], [w_linear, wn_linear]])
 
+    colors_array = [['black', 'black', 'black'], ['green', 'green', 'green'], ['yellow', 'yellow', 'yellow']]
     utils.show.show_separating_hyperplanes('separating hyperplanes', samples0, samples1, W_array, colors_array,
                                            labels_array, markers_array)
     plt.show()
@@ -379,7 +379,6 @@ def task3(samples0, samples1):
     C = np.array([0.1, 1, 10])
     for i in range(0, len(qp_errors_array)):
         print(f'С = {C[i]} qp error : {qp_errors_array[i]} svc error : {svc_errors_array[i]}')
-    # print(f'best C = {find_best_C_from_values(dataset, np.arange(1, 20, 1))}')
 
 
 def task4(samples0, samples1, kernel, kernel_params):
@@ -454,6 +453,8 @@ def task4(samples0, samples1, kernel, kernel_params):
         discriminant_func_values = np.array(discriminant_func_values).reshape(xx.shape)
 
         plt.title(f'C = {C} K = {kernel} method is qp')
+        plt.xlim(left=Constants.left, right=Constants.right)
+        plt.ylim(bottom=Constants.bot, top=Constants.top)
         plt.plot(samples0[0], samples0[1], 'r.')
         plt.plot(samples1[0], samples1[1], 'b.')
 
@@ -480,6 +481,8 @@ def task4(samples0, samples1, kernel, kernel_params):
         plt.title(f'C = {C} K = {kernel} method is svc')
         plt.plot(samples0[0], samples0[1], 'r.')
         plt.plot(samples1[0], samples1[1], 'b.')
+        plt.xlim(left=Constants.left, right=Constants.right)
+        plt.ylim(bottom=Constants.bot, top=Constants.top)
         plt.contour(xx, yy, discriminant_func_values_svc, levels=[-1, 0, 1], colors=['red', 'black', 'green'])
         show_sup_vectors(sup_0_svc, sup_1_svc)
         show_bayes_border(bayes_, 'blue', 'bs', '|')
