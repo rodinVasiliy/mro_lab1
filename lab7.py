@@ -1,3 +1,5 @@
+import random
+
 import lab1
 import lab2
 import lab6
@@ -107,6 +109,56 @@ def get_centres(samples):
     return centers_array, max_distance_array, t_distance_array
 
 
+def get_s(samples, min_indexes, K):
+    classes = [[] for _ in range(K)]
+    for i, cls in np.ndenumerate(min_indexes):
+        classes[cls].append(samples[0:2, i])
+
+    for k in range(K):
+        classes[k] = np.array(classes[k])
+
+    return classes
+
+
+def k_means_method(samples, K, indexes_clusters=None):
+    centers = []
+    if indexes_clusters is not None:
+        for index in indexes_clusters:
+            centers.append(samples[0:2, index])
+    else:
+        for k in range(0, K):
+            centers.append(samples[0:2, k])
+
+    stats_num_changed = []
+    classes = None
+
+    while True:
+        old_classes = classes
+        distances = get_distances_to_centers(samples, centers)
+        min_indexes = np.argmin(distances, axis=0)
+        classes = get_s(samples, min_indexes, K)
+
+        changed = False
+
+        if old_classes is not None:
+            cur_changed = 0
+            for i in range(K):
+                for j in range(len(classes[i])):
+                    if classes[i][j] not in old_classes[i]:
+                        cur_changed += 1
+            stats_num_changed.append(cur_changed)
+
+        for i in range(K):
+            new_center = classes[i].mean(axis=0)
+            if not np.array_equal(new_center, centers[i]):
+                changed = True
+            centers[i] = new_center
+
+        if not changed:
+            break
+    return centers, classes, stats_num_changed
+
+
 if __name__ == '__main__':
     N = 50
     M1 = np.array([1, -1]).reshape(2, 1)
@@ -150,5 +202,51 @@ if __name__ == '__main__':
         x = np.arange(0, len(m_array) + 1)
         plt.plot(x, max_dist_array, label='max distance')
         plt.plot(x, t_dist_array, label='typical distance')
+        plt.xlabel('count centers')
+        plt.legend()
+        plt.show()
+
+    samples_array = [samples1, samples2, samples3]
+    samples_array_result = concatenate_samples(samples_array)
+    rng = np.random.default_rng(2)
+    K = 3
+    indexes = rng.choice(range(samples_array_result.shape[1]), K, replace=False)
+    centers, classes, stats = k_means_method(samples_array_result, K, indexes)
+    fig = plt.figure(figsize=(15, 5))
+    fig.add_subplot(1, 2, 1)
+    plt.title(f'k means for {K} classes')
+    for k in range(len(classes)):
+        plt.scatter(classes[k][:, 0], classes[k][:, 1], label=f"cl{k}")
+    for c in centers:
+        plt.scatter(c[0], c[1], marker='o', color='black', alpha=0.6, s=100)
+    fig.add_subplot(1, 2, 2)
+    plt.title(f'k means for {K} classes')
+    x = np.arange(0, len(stats))
+    plt.plot(x, stats, label='dependence of the number of changes on the iteration number')
+    plt.xlabel('count iteration')
+    plt.ylabel('count changed vectors')
+    plt.legend()
+    plt.show()
+
+    rng_array = [np.random.default_rng(42), np.random.default_rng(1)]
+    for rng in rng_array:
+        samples_array = [samples1, samples2, samples3, samples4, samples5]
+        samples_array_result = concatenate_samples(samples_array)
+        K = 5
+        indexes = rng.choice(range(samples_array_result.shape[1]), K, replace=False)
+        centers, classes, stats = k_means_method(samples_array_result, K, indexes)
+        fig = plt.figure(figsize=(15, 5))
+        fig.add_subplot(1, 2, 1)
+        plt.title(f'k means for {K} classes')
+        for k in range(len(classes)):
+            plt.scatter(classes[k][:, 0], classes[k][:, 1], label=f"cl{k}")
+        for c in centers:
+            plt.scatter(c[0], c[1], marker='o', color='black', alpha=0.6, s=100)
+        fig.add_subplot(1, 2, 2)
+        plt.title(f'k means for {K} classes')
+        x = np.arange(0, len(stats))
+        plt.plot(x, stats, label='dependence of the number of changes on the iteration number')
+        plt.xlabel('count iteration')
+        plt.ylabel('count changed vectors')
         plt.legend()
         plt.show()
