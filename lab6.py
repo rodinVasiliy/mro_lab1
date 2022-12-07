@@ -174,18 +174,6 @@ def get_discriminant_function_for_x(x, sup_vectors, sup_lambdas, K, K_params, wn
 
 
 def get_wn_with_kernel(support_vectors, lambda_array, K, K_params):
-    # result = 0
-    # for j in range(0, len(support_vectors)):
-    #     r_j = support_vectors[2, j]
-    #     x_j_sup = support_vectors[0:2, j]
-    #     tmp_sum = 0
-    #     for i in range(0, len(lambda_array)):
-    #         x_i = support_vectors[0:2, i]
-    #         lambda_i = lambda_array[i]
-    #         r_i = support_vectors[2, i]
-    #         tmp_sum += lambda_i * r_i * get_K(x_i, x_j_sup, K, K_params)
-    #     result += r_j - tmp_sum
-    # return result / len(support_vectors)
     r_j = support_vectors[2, 0]
     y = support_vectors[0:2, 0]
     tmp = 0

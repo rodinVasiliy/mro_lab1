@@ -1,11 +1,8 @@
-import random
+import matplotlib.pyplot as plt
+import numpy as np
 
 import lab1
 import lab2
-import lab6
-from lab1 import get_training_samples
-import numpy as np
-import matplotlib.pyplot as plt
 from lab5 import get_euclidean_distance
 
 

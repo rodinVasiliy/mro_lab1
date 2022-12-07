@@ -127,8 +127,9 @@ if __name__ == '__main__':
     b0p = Constants.R1_lab5
     b1p = Constants.R2_lab5
     params_array = [[M0p, M1p, b0p, b0p], [M0p, M1p, b0p, b1p]]
-
-    for params in params_array:
+    case_array = ['случай линейно-разделимых классов', 'случай линейно-неразделимых классов']
+    for params, case in zip(params_array, case_array):
+        print(case)
         M0 = params[0]
         M1 = params[1]
         b0 = params[2]
