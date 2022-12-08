@@ -78,6 +78,25 @@ def get_typical_distance(centers_array):
     return 0.5 * sum_distance / len(center_distances)
 
 
+def show_samples_with_min_indexes(samples, min_indexes, colors, centers):
+    classes = [[] for _ in range(0, len(centers))]
+    for i, cls in np.ndenumerate(min_indexes):
+        classes[cls].append(samples[0:2, i])
+
+    for k in range(0, len(centers)):
+        classes[k] = np.array(classes[k])
+    for class_, color in zip(classes, colors):
+        shape = class_.shape
+        new_shape = (shape[0], shape[1])
+        class_ = np.reshape(class_, new_shape)
+        class_ = np.transpose(class_)
+        lab1.show_vector_points1(class_, color)
+
+    plt.title(f'count centers = {len(centers)}')
+    for c in centers:
+        plt.scatter(c[0], c[1], marker='o', color='black', alpha=0.6, s=100)
+
+
 def get_centres(samples):
     m0, m0_max_dist = find_first_center_and_max_distance(samples)
     m1, m1_max_dist = find_second_center_and_max_distance(samples, m0)
@@ -86,9 +105,12 @@ def get_centres(samples):
     remaining_samples = remove_center_from_samples(remaining_samples, m1)
     max_distance_array = [m0_max_dist, m1_max_dist]
     t_distance_array = [0, 0]
+    colors = ['red', 'green', 'blue', 'yellow', 'pink']
     while True:
         distances_array = get_distances_to_centers(remaining_samples, centers_array)
         min_indexes = np.argmin(distances_array, axis=0)
+        show_samples_with_min_indexes(remaining_samples, min_indexes, colors, centers_array)
+        plt.show()
         distances_array_min = get_min_distances(min_indexes, distances_array)
         max_indexes = np.argmax(distances_array_min)
         max_distance_array.append(distances_array_min[max_indexes])
@@ -117,6 +139,17 @@ def get_s(samples, min_indexes, K):
     return classes
 
 
+def show_classes(classes, colors, centers):
+    for class_, color in zip(classes, colors):
+        shape = class_.shape
+        new_shape = (shape[0], shape[1])
+        class_ = np.reshape(class_, new_shape)
+        class_ = np.transpose(class_)
+        lab1.show_vector_points1(class_, color)
+    for c in centers:
+        plt.scatter(c[0], c[1], marker='o', color='black', alpha=0.6, s=100)
+
+
 def k_means_method(samples, K, indexes_clusters=None):
     centers = []
     if indexes_clusters is not None:
@@ -128,13 +161,14 @@ def k_means_method(samples, K, indexes_clusters=None):
 
     stats_num_changed = []
     classes = None
-
+    colors = ['red', 'green', 'blue', 'yellow', 'pink']
     while True:
         old_classes = classes
         distances = get_distances_to_centers(samples, centers)
         min_indexes = np.argmin(distances, axis=0)
         classes = get_s(samples, min_indexes, K)
-
+        show_classes(classes, colors, centers)
+        plt.show()
         changed = False
 
         if old_classes is not None:
@@ -182,28 +216,27 @@ if __name__ == '__main__':
 
     samples_array = [samples1, samples2, samples3, samples4, samples5]
     samples_array_result = concatenate_samples(samples_array)
-    for i in range(2, 6):
-        fig = plt.figure(figsize=(15, 5))
-        fig.add_subplot(1, 2, 1)
-        plt.title(f'minmax for {i} classes')
-        res = samples_array_result[:, 0:N * i]
-        m_array, max_dist_array, t_dist_array = get_centres(res)
-        print(m_array)
-        for j in range(0, i):
-            lab1.show_vector_points1(samples_array[j], colors_array[j])
-        for m in m_array:
-            plt.scatter(m[0], m[1], marker='o', color='black', alpha=0.6, s=100)
+    plt.title(f'minmax for 5 classes')
+    res = samples_array_result
+    m_array, max_dist_array, t_dist_array = get_centres(res)
+    fig = plt.figure(figsize=(15, 5))
+    fig.add_subplot(1, 2, 1)
+    # print(m_array)
+    for j in range(0, 5):
+        lab1.show_vector_points1(samples_array[j], colors_array[j])
+    for m in m_array:
+        plt.scatter(m[0], m[1], marker='o', color='black', alpha=0.6, s=100)
 
-        fig.add_subplot(1, 2, 2)
-        plt.title(f'minmax for {i} classes')
-        x = np.arange(0, len(m_array) + 1)
-        plt.plot(x, max_dist_array, label='max distance')
-        plt.plot(x, t_dist_array, label='typical distance')
-        plt.xlabel('count centers')
-        plt.legend()
-        plt.show()
+    fig.add_subplot(1, 2, 2)
+    plt.title(f'minmax for 5 classes')
+    x = np.arange(0, len(m_array) + 1)
+    plt.plot(x, max_dist_array, label='max distance')
+    plt.plot(x, t_dist_array, label='typical distance')
+    plt.xlabel('count centers')
+    plt.legend()
+    plt.show()
 
-    samples_array = [samples1, samples2, samples3]
+    samples_array = [samples1, samples2, samples3, samples4, samples5]
     samples_array_result = concatenate_samples(samples_array)
     rng = np.random.default_rng(2)
     K = 3
@@ -218,7 +251,7 @@ if __name__ == '__main__':
         plt.scatter(c[0], c[1], marker='o', color='black', alpha=0.6, s=100)
     fig.add_subplot(1, 2, 2)
     plt.title(f'k means for {K} classes')
-    x = np.arange(0, len(stats))
+    x = np.arange(3, 3 + len(stats))
     plt.plot(x, stats, label='dependence of the number of changes on the iteration number')
     plt.xlabel('count iteration')
     plt.ylabel('count changed vectors')
@@ -241,7 +274,7 @@ if __name__ == '__main__':
             plt.scatter(c[0], c[1], marker='o', color='black', alpha=0.6, s=100)
         fig.add_subplot(1, 2, 2)
         plt.title(f'k means for {K} classes')
-        x = np.arange(0, len(stats))
+        x = np.arange(3, 3 + len(stats))
         plt.plot(x, stats, label='dependence of the number of changes on the iteration number')
         plt.xlabel('count iteration')
         plt.ylabel('count changed vectors')
