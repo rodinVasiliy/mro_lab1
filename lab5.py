@@ -5,11 +5,16 @@ from scipy.spatial import distance
 import Constants
 import lab1
 import lab2
+import lab4
+import lab6
 from lab1 import get_training_samples
-
+from utils.baios import get_bayos_lines
 
 def get_euclidean_distance(x, y):
-    return distance.euclidean(x, y)
+    x = x.reshape(2, )
+    y = y.reshape(2, )
+    return np.linalg.norm(x - y)
+    # return distance.euclidean(x, y)
 
 
 def get_distances_array(x, datasets, datasets_labels):
@@ -121,6 +126,20 @@ def get_classification_error_from_labels(y_pred, y_test):
     return p0_count / N0, p1_count / N1
 
 
+def get_erorrs_indexes(y_pred, y_test):
+    y_pred = np.ravel(y_pred)
+    erorrs_indexes = []
+    for i in range(0, len(y_pred)):
+        if int(y_test[i]) != int(y_pred[i]):
+            erorrs_indexes.append(i)
+    return np.array(erorrs_indexes)
+
+
+def show_wrong_classification(samples, indexes):
+    for index in indexes:
+        plt.scatter(samples[0, index], samples[1, index], marker='o', color='black', alpha=0.6, s=100)
+
+
 if __name__ == '__main__':
     M0p = Constants.M1_lab5
     M1p = Constants.M2_lab5
@@ -152,6 +171,24 @@ if __name__ == '__main__':
         y_test = np.zeros(100)
         y_test = np.concatenate((y_test, np.ones(100)), axis=0)
         y_pred = classify_data(train_datasets, test_datasets, parzen_classifier, None)
+        error_indexes = get_erorrs_indexes(y_pred, y_test)
+        plt.title('show classification parzen')
+        lab1.show_vector_points1(test_datasets[0], 'red')
+        lab1.show_vector_points1(test_datasets[1], 'blue')
+        show_wrong_classification(np.concatenate((test_datasets[0], test_datasets[1]), axis=1), error_indexes)
+        x_array = np.arange(0, 2, 0.01)
+        thresh = np.log(0.5 / 0.5)
+        # if case == 'случай линейно-разделимых классов':
+        #     bayes_ = lab2.get_bayesian_border_for_normal_classes_with_same_cor_matrix(x_array, M0, M1,
+        #                                                                               b0, thresh)
+        #     plt.plot(x_array, bayes_, color='green')
+        # else:
+        #     x_array = np.arange(-4, 4, 0.01)
+        #     bayes_ = lab2.get_bayesian_border_for_normal_classes(x_array, M0, M1, b0, b1, thresh)
+        #     lab6.show_bayes_border(bayes_, 'green', 'bs', '.')
+        plt.ylim(-1)
+        plt.show()
+        print(error_indexes)
         p0, p1 = get_classification_error_from_labels(y_pred, y_test)
 
         print("\nметод Парзена, 2 класса")
@@ -167,6 +204,23 @@ if __name__ == '__main__':
         for K in K_array:
             params = [K, labels]
             y_pred = classify_data(train_datasets, test_datasets, K_neighbours_classifier, params)
+            error_indexes = get_erorrs_indexes(y_pred, y_test)
+            print(error_indexes)
+            plt.title(f'show classification K = {K}')
+            lab1.show_vector_points1(test_datasets[0], 'red')
+            lab1.show_vector_points1(test_datasets[1], 'blue')
+            show_wrong_classification(np.concatenate((test_datasets[0], test_datasets[1]), axis=1), error_indexes)
+            # if case == 'случай линейно-разделимых классов':
+            #     bayes_ = lab2.get_bayesian_border_for_normal_classes_with_same_cor_matrix(x_array, M0, M1,
+            #                                                                               b0, thresh)
+            #     plt.plot(x_array, bayes_, color='green')
+            # else:
+            #     x_array = np.arange(-4, 4, 0.01)
+            #     bayes_ = lab2.get_bayesian_border_for_normal_classes(x_array, M0, M1, b0, b1, thresh)
+            #     lab6.show_bayes_border(bayes_, 'green', 'bs', '.')
+            plt.ylim(-1)
+            plt.show()
+
             p0, p1 = get_classification_error_from_labels(y_pred, y_test)
             print(f"\nметод K ближайших (K = {K}) соседей 2 класса")
             print(f"Вероятность ошибочной классификации p01: {p0}")
