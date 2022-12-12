@@ -137,7 +137,7 @@ def get_erorrs_indexes(y_pred, y_test):
 
 def show_wrong_classification(samples, indexes):
     for index in indexes:
-        plt.scatter(samples[0, index], samples[1, index], marker='o', color='black', alpha=0.6, s=100)
+        plt.scatter(samples[0, index], samples[1, index], marker='o', color='black', alpha=0.4, s=100)
 
 
 if __name__ == '__main__':
@@ -155,8 +155,6 @@ if __name__ == '__main__':
         b1 = params[3]
         train_dataset0 = get_training_samples(M0, b0, 50)
         train_dataset1 = get_training_samples(M1, b1, 50)
-        lab1.show_vector_points1(train_dataset0, 'red')
-        lab1.show_vector_points1(train_dataset1, 'blue')
         plt.show()
         train_datasets = [train_dataset0, train_dataset1]
         test_datasets = [lab1.get_training_samples(M0, b0, 100), get_training_samples(M1, b1, 100)]
@@ -176,17 +174,17 @@ if __name__ == '__main__':
         lab1.show_vector_points1(test_datasets[0], 'red')
         lab1.show_vector_points1(test_datasets[1], 'blue')
         show_wrong_classification(np.concatenate((test_datasets[0], test_datasets[1]), axis=1), error_indexes)
-        x_array = np.arange(0, 2, 0.01)
+        x_array = np.arange(-1, 4, 0.01)
         thresh = np.log(0.5 / 0.5)
-        # if case == 'случай линейно-разделимых классов':
-        #     bayes_ = lab2.get_bayesian_border_for_normal_classes_with_same_cor_matrix(x_array, M0, M1,
-        #                                                                               b0, thresh)
-        #     plt.plot(x_array, bayes_, color='green')
-        # else:
-        #     x_array = np.arange(-4, 4, 0.01)
-        #     bayes_ = lab2.get_bayesian_border_for_normal_classes(x_array, M0, M1, b0, b1, thresh)
-        #     lab6.show_bayes_border(bayes_, 'green', 'bs', '.')
-        plt.ylim(-1)
+        if case == 'случай линейно-разделимых классов':
+            bayes_ = lab2.get_bayesian_border_for_normal_classes_with_same_cor_matrix(x_array, M0, M1,
+                                                                                      b0, thresh)
+            plt.plot(x_array, bayes_, color='green')
+        else:
+            x_array = np.arange(-1, 4, 0.01)
+            bayes_ = lab2.get_bayesian_border_for_normal_classes(x_array, M0, M1, b0, b1, thresh)
+            lab6.show_bayes_border(bayes_, 'green', 'bs', '.')
+        plt.ylim([-2.5, 4])
         plt.show()
         print(error_indexes)
         p0, p1 = get_classification_error_from_labels(y_pred, y_test)
@@ -210,15 +208,15 @@ if __name__ == '__main__':
             lab1.show_vector_points1(test_datasets[0], 'red')
             lab1.show_vector_points1(test_datasets[1], 'blue')
             show_wrong_classification(np.concatenate((test_datasets[0], test_datasets[1]), axis=1), error_indexes)
-            # if case == 'случай линейно-разделимых классов':
-            #     bayes_ = lab2.get_bayesian_border_for_normal_classes_with_same_cor_matrix(x_array, M0, M1,
-            #                                                                               b0, thresh)
-            #     plt.plot(x_array, bayes_, color='green')
-            # else:
-            #     x_array = np.arange(-4, 4, 0.01)
-            #     bayes_ = lab2.get_bayesian_border_for_normal_classes(x_array, M0, M1, b0, b1, thresh)
-            #     lab6.show_bayes_border(bayes_, 'green', 'bs', '.')
-            plt.ylim(-1)
+            if case == 'случай линейно-разделимых классов':
+                bayes_ = lab2.get_bayesian_border_for_normal_classes_with_same_cor_matrix(x_array, M0, M1,
+                                                                                          b0, thresh)
+                plt.plot(x_array, bayes_, color='green')
+            else:
+                x_array = np.arange(-1, 4, 0.01)
+                bayes_ = lab2.get_bayesian_border_for_normal_classes(x_array, M0, M1, b0, b1, thresh)
+                lab6.show_bayes_border(bayes_, 'green', 'bs', '.')
+            plt.ylim([-2.5, 4])
             plt.show()
 
             p0, p1 = get_classification_error_from_labels(y_pred, y_test)

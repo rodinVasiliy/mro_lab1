@@ -158,7 +158,7 @@ def k_means_method(samples, K, indexes_clusters=None):
     else:
         for k in range(0, K):
             centers.append(samples[0:2, k])
-
+    iter = 0
     stats_num_changed = []
     classes = None
     colors = ['red', 'green', 'blue', 'yellow', 'pink']
@@ -168,6 +168,8 @@ def k_means_method(samples, K, indexes_clusters=None):
         min_indexes = np.argmin(distances, axis=0)
         classes = get_s(samples, min_indexes, K)
         show_classes(classes, colors, centers)
+        plt.title(f'iteration number: {iter}')
+        iter += 1
         plt.show()
         changed = False
 

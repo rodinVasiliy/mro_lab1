@@ -31,7 +31,11 @@ bot = -1
 
 k = 0.25
 
-M1_lab5 = np.array([0, 0]).reshape(2, 1)
-M2_lab5 = np.array([1, 1]).reshape(2, 1)
-R1_lab5 = np.array(([0.03, 0.0], [0.0, 0.07]))
-R2_lab5 = np.array(([0.30, 0.01], [0.02, 0.17]))
+M1_lab5 = np.array([1, -1]).reshape(2, 1)
+M2_lab5 = np.array([2, 2]).reshape(2, 1)
+R1_lab5 = np.array((
+    [0.43, -0.2],
+    [-0.2, 0.56]))
+R2_lab5 = np.array((
+    [0.4, 0.15],
+    [0.15, 0.56]))
